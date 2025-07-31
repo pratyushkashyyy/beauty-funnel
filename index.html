@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyfluence Beauty - Personalized Beauty Quiz</title>
+    <meta name="description" content="Take our personalized beauty quiz to discover your perfect skincare routine. Get customized recommendations based on your unique needs.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+    <!-- Quiz Container -->
+    <div class="quiz-container">
+        <!-- Header -->
+        <header class="quiz-header">
+            <div class="header-content">
+                <button class="back-button" id="backBtn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="brand">
+                    <div class="brand-line"></div>
+                    <h1>Skyfluence Beauty</h1>
+                    <div class="brand-line"></div>
+                </div>
+                <div class="progress-indicator">
+                    <span class="current-step">1</span>
+                    <span class="total-steps">/7</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quiz Content -->
+        <main class="quiz-content">
+            <!-- Step 1: Age Selection -->
+            <div class="quiz-step active" id="step1">
+                <div class="question-container">
+                    <h2 class="question-title">What Is Your Age?</h2>
+                    <p class="question-subtitle">Take the first step toward looking your absolute best.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="18-24">
+                            <div class="option-content">
+                                <span class="option-text">18-24</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="25-34">
+                            <div class="option-content">
+                                <span class="option-text">25-34</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="35-44">
+                            <div class="option-content">
+                                <span class="option-text">35-44</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="45-54">
+                            <div class="option-content">
+                                <span class="option-text">45-54</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="55+">
+                            <div class="option-content">
+                                <span class="option-text">55+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Skin Type -->
+            <div class="quiz-step" id="step2">
+                <div class="question-container">
+                    <h2 class="question-title">What's Your Skin Type?</h2>
+                    <p class="question-subtitle">Help us understand your skin's unique characteristics.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="dry">
+                            <div class="option-content">
+                                <i class="fas fa-tint"></i>
+                                <span class="option-text">Dry</span>
+                                <span class="option-description">Tight, flaky, rough texture</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="oily">
+                            <div class="option-content">
+                                <i class="fas fa-oil-can"></i>
+                                <span class="option-text">Oily</span>
+                                <span class="option-description">Shiny, greasy, prone to breakouts</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="combination">
+                            <div class="option-content">
+                                <i class="fas fa-balance-scale"></i>
+                                <span class="option-text">Combination</span>
+                                <span class="option-description">Oily T-zone, dry cheeks</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="normal">
+                            <div class="option-content">
+                                <i class="fas fa-heart"></i>
+                                <span class="option-text">Normal</span>
+                                <span class="option-description">Balanced, healthy, few concerns</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="sensitive">
+                            <div class="option-content">
+                                <i class="fas fa-shield-alt"></i>
+                                <span class="option-text">Sensitive</span>
+                                <span class="option-description">Easily irritated, redness</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Skin Concerns -->
+            <div class="quiz-step" id="step3">
+                <div class="question-container">
+                    <h2 class="question-title">What Are Your Main Skin Concerns?</h2>
+                    <p class="question-subtitle">Select all that apply to your skin goals.</p>
+                    
+                    <div class="options-container multi-select">
+                        <div class="option-card" data-value="aging">
+                            <div class="option-content">
+                                <i class="fas fa-clock"></i>
+                                <span class="option-text">Aging & Wrinkles</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="acne">
+                            <div class="option-content">
+                                <i class="fas fa-circle"></i>
+                                <span class="option-text">Acne & Breakouts</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="dark-spots">
+                            <div class="option-content">
+                                <i class="fas fa-adjust"></i>
+                                <span class="option-text">Dark Spots & Hyperpigmentation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="dryness">
+                            <div class="option-content">
+                                <i class="fas fa-snowflake"></i>
+                                <span class="option-text">Dryness & Dehydration</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="pores">
+                            <div class="option-content">
+                                <i class="fas fa-dot-circle"></i>
+                                <span class="option-text">Large Pores</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="redness">
+                            <div class="option-content">
+                                <i class="fas fa-fire"></i>
+                                <span class="option-text">Redness & Inflammation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="dullness">
+                            <div class="option-content">
+                                <i class="fas fa-cloud"></i>
+                                <span class="option-text">Dullness & Lack of Radiance</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="texture">
+                            <div class="option-content">
+                                <i class="fas fa-mountain"></i>
+                                <span class="option-text">Uneven Texture</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Current Routine -->
+            <div class="quiz-step" id="step4">
+                <div class="question-container">
+                    <h2 class="question-title">What's Your Current Skincare Routine?</h2>
+                    <p class="question-subtitle">This helps us recommend the right products for your routine.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="minimal">
+                            <div class="option-content">
+                                <i class="fas fa-star"></i>
+                                <span class="option-text">Minimal</span>
+                                <span class="option-description">Just cleanser and moisturizer</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="basic">
+                            <div class="option-content">
+                                <i class="fas fa-list"></i>
+                                <span class="option-text">Basic</span>
+                                <span class="option-description">Cleanser, toner, moisturizer</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="advanced">
+                            <div class="option-content">
+                                <i class="fas fa-layer-group"></i>
+                                <span class="option-text">Advanced</span>
+                                <span class="option-description">Multiple serums and treatments</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="none">
+                            <div class="option-content">
+                                <i class="fas fa-times"></i>
+                                <span class="option-text">No Routine</span>
+                                <span class="option-description">Starting from scratch</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Lifestyle -->
+            <div class="quiz-step" id="step5">
+                <div class="question-container">
+                    <h2 class="question-title">What's Your Lifestyle Like?</h2>
+                    <p class="question-subtitle">This helps us recommend products that fit your daily routine.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="busy">
+                            <div class="option-content">
+                                <i class="fas fa-running"></i>
+                                <span class="option-text">Busy & Active</span>
+                                <span class="option-description">Quick, effective solutions</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="relaxed">
+                            <div class="option-content">
+                                <i class="fas fa-spa"></i>
+                                <span class="option-text">Relaxed & Pampering</span>
+                                <span class="option-description">Luxurious, indulgent routine</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="natural">
+                            <div class="option-content">
+                                <i class="fas fa-leaf"></i>
+                                <span class="option-text">Natural & Organic</span>
+                                <span class="option-description">Clean, green ingredients</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="results">
+                            <div class="option-content">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="option-text">Results-Driven</span>
+                                <span class="option-description">Clinical, proven formulas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Environment -->
+            <div class="quiz-step" id="step6">
+                <div class="question-container">
+                    <h2 class="question-title">What's Your Environment Like?</h2>
+                    <p class="question-subtitle">Environmental factors affect your skin's needs.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="dry-climate">
+                            <div class="option-content">
+                                <i class="fas fa-sun"></i>
+                                <span class="option-text">Dry Climate</span>
+                                <span class="option-description">Desert, low humidity</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="humid-climate">
+                            <div class="option-content">
+                                <i class="fas fa-tint"></i>
+                                <span class="option-text">Humid Climate</span>
+                                <span class="option-description">Tropical, high humidity</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="polluted">
+                            <div class="option-content">
+                                <i class="fas fa-city"></i>
+                                <span class="option-text">Urban/Polluted</span>
+                                <span class="option-description">City living, pollution</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="seasonal">
+                            <div class="option-content">
+                                <i class="fas fa-snowflake"></i>
+                                <span class="option-text">Seasonal Changes</span>
+                                <span class="option-description">Four distinct seasons</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Budget -->
+            <div class="quiz-step" id="step7">
+                <div class="question-container">
+                    <h2 class="question-title">What's Your Budget Range?</h2>
+                    <p class="question-subtitle">We'll recommend products that fit your investment level.</p>
+                    
+                    <div class="options-container">
+                        <div class="option-card" data-value="budget">
+                            <div class="option-content">
+                                <span class="option-text">Budget-Friendly</span>
+                                <span class="option-description">$20-50 per product</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="mid-range">
+                            <div class="option-content">
+                                <span class="option-text">Mid-Range</span>
+                                <span class="option-description">$50-100 per product</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="premium">
+                            <div class="option-content">
+                                <span class="option-text">Premium</span>
+                                <span class="option-description">$100+ per product</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-card" data-value="no-limit">
+                            <div class="option-content">
+                                <span class="option-text">No Limit</span>
+                                <span class="option-description">Best of the best</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Step -->
+            <div class="quiz-step" id="results">
+                <div class="results-container">
+                    <div class="results-header">
+                        <i class="fas fa-sparkles"></i>
+                        <h2>Your Personalized Results Are Ready!</h2>
+                        <p>Based on your answers, we've created a custom skincare routine just for you.</p>
+                    </div>
+                    
+                    <div class="results-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Age Range:</span>
+                            <span class="summary-value" id="ageResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Skin Type:</span>
+                            <span class="summary-value" id="skinTypeResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Main Concerns:</span>
+                            <span class="summary-value" id="concernsResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Current Routine:</span>
+                            <span class="summary-value" id="routineResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Lifestyle:</span>
+                            <span class="summary-value" id="lifestyleResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Environment:</span>
+                            <span class="summary-value" id="environmentResult">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Budget:</span>
+                            <span class="summary-value" id="budgetResult">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-preview">
+                        <h3>Your Custom Routine Includes:</h3>
+                        <div class="product-preview">
+                            <div class="product-item">
+                                <div class="product-icon">
+                                    <i class="fas fa-pump-soap"></i>
+                                </div>
+                                <div class="product-info">
+                                    <h4>Gentle Cleanser</h4>
+                                    <p>Perfect for your skin type</p>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <div class="product-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="product-info">
+                                    <h4>Hydrating Serum</h4>
+                                    <p>Targets your main concerns</p>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <div class="product-icon">
+                                    <i class="fas fa-magic"></i>
+                                </div>
+                                <div class="product-info">
+                                    <h4>Anti-Aging Cream</h4>
+                                    <p>Fits your lifestyle & budget</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-cta">
+                        <button class="btn btn-primary btn-large" onclick="captureEmail()">
+                            <i class="fas fa-envelope"></i>
+                            Get My Full Results
+                        </button>
+                        <p class="cta-note">Enter your email to receive your complete personalized routine</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="quiz-footer">
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="prevBtn" style="display: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn">
+                    Next
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="btn btn-success" id="getResultsBtn" style="display: none;">
+                    Get My Results
+                    <i class="fas fa-sparkles"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Analyzing Your Results...</h3>
+            <p>Creating your personalized beauty routine</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
