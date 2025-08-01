@@ -14,12 +14,11 @@ export default function AnalysisProcessingPage({ onComplete }: AnalysisProcessin
   const [currentStep, setCurrentStep] = useState(0)
 
   useEffect(() => {
-    // Random durations for each step (between 6-12 seconds each, total 30-48 seconds)
     const stepDurations = [
-      8000 + Math.random() * 4000, // Step 1: 8-12 seconds
-      7000 + Math.random() * 5000, // Step 2: 7-12 seconds  
-      8000 + Math.random() * 4000, // Step 3: 8-12 seconds
-      7000 + Math.random() * 5000  // Step 4: 7-12 seconds
+      4000 + Math.random() * 3000, // Step 1: 8-12 seconds
+      3000 + Math.random() * 4000, // Step 2: 7-12 seconds  
+      4000 + Math.random() * 3000, // Step 3: 8-12 seconds
+      3000 + Math.random() * 4000  // Step 4: 7-12 seconds
     ]
 
     const totalDuration = stepDurations.reduce((sum, duration) => sum + duration, 0)
