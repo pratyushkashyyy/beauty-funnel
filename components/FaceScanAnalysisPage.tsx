@@ -24,24 +24,24 @@ export default function FaceScanAnalysisPage({ onComplete, capturedImage }: Face
   // Step timer and completion
   useEffect(() => {
     if (step < analysisTexts.length - 1) {
-      const timer = setTimeout(() => setStep(step + 1), 5000)
+      const timer = setTimeout(() => setStep(step + 1), 2500)
       return () => clearTimeout(timer)
     } else {
-      // Wait 5s on last step, then complete
-      const timer = setTimeout(() => onComplete(), 5000)
+      // Wait 2.5s on last step, then complete
+      const timer = setTimeout(() => onComplete(), 2500)
       return () => clearTimeout(timer)
     }
   }, [step])
 
-  // Scanning line animation: loops from bottom to top every 6 seconds
+  // Scanning line animation: loops from bottom to top every 3 seconds
   const [scanPos, setScanPos] = useState(0)
   useEffect(() => {
     let running = true
     let start = Date.now()
     function animate() {
       if (!running) return
-      const elapsed = (Date.now() - start) % 6000 // 6s per scan
-      setScanPos(elapsed / 6000)
+      const elapsed = (Date.now() - start) % 3000 // 3s per scan
+      setScanPos(elapsed / 3000)
       requestAnimationFrame(animate)
     }
     animate()
