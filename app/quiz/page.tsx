@@ -71,10 +71,8 @@ export default function QuizPage() {
             email: data.user.email,
             phone: data.user.phone
           })
-        } else {
-          // User doesn't exist, show contact info after 2-3 questions
-          setShowContactInfo(true)
         }
+        // Don't show contact info immediately - let the quiz flow handle it
       }
     } catch (error) {
       console.error('Error checking user:', error)
@@ -335,8 +333,8 @@ export default function QuizPage() {
     console.log('handleNext called, currentStep:', quizState.currentStep, 'totalSteps:', quizQuestions.length)
     
     if (quizState.currentStep < quizQuestions.length) {
-      // Show contact info after 2 questions if user doesn't exist
-      if (quizState.currentStep === 2 && !userContactInfo) {
+      // Show contact info after 3 questions if user doesn't exist
+      if (quizState.currentStep === 3 && !userContactInfo) {
         console.log('Showing contact info page')
         setShowContactInfo(true)
         updateURL(3)
@@ -369,7 +367,7 @@ export default function QuizPage() {
         updateURL(quizState.currentStep + 1)
       }
     } else {
-      // This is the last question (step 23), trigger profile saving
+      // This is the last question, trigger profile saving
       console.log('Last question completed, showing profile saving page')
       setShowProfileSaving(true)
       updateURL(23)
@@ -380,27 +378,27 @@ export default function QuizPage() {
     setShowSocialProof(false)
     setQuizState(prev => ({
       ...prev,
-      currentStep: prev.currentStep + 1
+      currentStep: 9 // Go to question 9 after social proof
     }))
-    updateURL(quizState.currentStep + 1)
+    updateURL(9)
   }
 
   const handleMotivationalContinue = () => {
     setShowMotivational(false)
     setQuizState(prev => ({
       ...prev,
-      currentStep: prev.currentStep + 1
+      currentStep: 11 // Go to question 11 after motivational
     }))
-    updateURL(quizState.currentStep + 1)
+    updateURL(11)
   }
 
   const handleSecondMotivationalContinue = () => {
     setShowSecondMotivational(false)
     setQuizState(prev => ({
       ...prev,
-      currentStep: prev.currentStep + 1
+      currentStep: 16 // Go to question 16 after second motivational
     }))
-    updateURL(quizState.currentStep + 1)
+    updateURL(16)
   }
 
   const handleFaceScanContinue = () => {
@@ -493,9 +491,9 @@ export default function QuizPage() {
     setShowResultsPreview(false)
     setQuizState(prev => ({
       ...prev,
-      currentStep: prev.currentStep + 1
+      currentStep: 21 // Go to question 21 after results preview
     }))
-    updateURL(quizState.currentStep + 1)
+    updateURL(21)
   }
 
   const handleProfileSavingContinue = () => {
@@ -513,6 +511,13 @@ export default function QuizPage() {
   const handleContactInfoContinue = async (contactInfo: { name: string; email: string; phone: string }) => {
     setUserContactInfo(contactInfo)
     setShowContactInfo(false)
+    
+    // Advance to the next question after contact info is collected
+    setQuizState(prev => ({
+      ...prev,
+      currentStep: 4 // Go to question 4 after contact info
+    }))
+    updateURL(4)
     
     // The ContactInfoCollection component already saves the user to the database
     // No need to save again here
