@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 
 interface MotivationalPageProps {
   onContinue: () => void
@@ -16,91 +16,71 @@ export default function MotivationalPage({ onContinue }: MotivationalPageProps) 
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-orange-900">
-      {/* Background Images */}
-      <div className="absolute inset-0">
-        {/* Mobile Background */}
-        <div className="block md:hidden absolute inset-0">
-          <Image
-            src="/images/image_qcmtku.webp"
-            alt="Mobile background"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        {/* Desktop Background */}
-        <div className="hidden md:block absolute inset-0">
-          <Image
-            src="/images/Desktop_ai5ywz.jpg"
-            alt="Desktop background"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20"></div>
-      </div>
-
-      {/* Header */}
-      <header className="relative z-10 p-6">
-        <div className="flex justify-between items-center">
-          {/* Back Button */}
-          <button
-            onClick={handleBack}
-            className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          {/* Brand Logo */}
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-serif text-white">Skyfluence Beauty</span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-24 h-0.5 bg-white/30 rounded-full">
-            <div className="w-3/4 h-full bg-white rounded-full"></div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center h-full px-4 pb-32 text-center">
+    <div className="min-h-screen bg-white">
+      <main className="max-w-2xl mx-auto px-4 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="w-full max-w-2xl mx-auto"
+          className="text-center mb-8"
         >
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white leading-tight mb-4">
-            <span className="italic">So far,</span> there's a 71% chance you can look more attractive.
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">
+            You're just 2 minutes away from discovering your personalized beauty plan
           </h1>
-          <p className="text-sm md:text-base text-white/80 italic mb-8">
-            We can improve your chances. Let's know your face better to see if you have even more potential.
-          </p>
         </motion.div>
-      </main>
 
-      {/* Continue Button */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
-        className="fixed bottom-6 left-0 right-0 z-50 px-4"
-      >
-        <div className="max-w-md mx-auto">
+        {/* Single Provided Image */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-8 flex justify-center"
+        >
+          <OptimizedImage
+            src="/images/optimized/image_qcmtku.webp"
+            alt="Motivational beauty image"
+            width={320}
+            height={400}
+            className="w-80 h-auto rounded-lg border-2 border-gray-300"
+            quality={85}
+            sizes="(max-width: 768px) 320px, 400px"
+          />
+        </motion.div>
+
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="space-y-4 mb-8"
+        >
           <button
             onClick={onContinue}
-            className="w-full bg-transparent border border-white text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-white hover:text-black transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="w-full bg-black text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            CONTINUE
+            START MY ANALYSIS
           </button>
-        </div>
-      </motion.div>
+          <button
+            onClick={handleBack}
+            className="w-full bg-gray-200 text-gray-800 py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-300 transition-all duration-300"
+          >
+            GO BACK
+          </button>
+        </motion.div>
+
+        {/* Privacy Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="flex items-center justify-center space-x-2 text-sm text-gray-600"
+        >
+          <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          </svg>
+          <span>Your privacy is our priority. You remain anonymous - no one will see your face when you scan it.</span>
+        </motion.div>
+      </main>
     </div>
   )
 } 

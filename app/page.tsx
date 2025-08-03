@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import OptimizedImage from '../components/OptimizedImage'
 
 export default function HomePage() {
   const router = useRouter()
@@ -54,11 +55,15 @@ export default function HomePage() {
             className="mb-6"
           >
             <div className="relative w-64 h-80 mx-auto">
-              <img
-                src="/images/main-page_cwff8h.jpg"
+              <OptimizedImage
+                src="/images/optimized/main-page_cwff8h.webp"
                 alt="Woman with beautiful makeup"
+                width={256}
+                height={320}
                 className="w-full h-full object-cover rounded-lg"
-                loading="lazy"
+                priority={true}
+                quality={85}
+                sizes="(max-width: 768px) 256px, 320px"
                 style={{
                   boxShadow: '0 0 20px rgba(0,0,0,0.1)'
                 }}

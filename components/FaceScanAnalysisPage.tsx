@@ -2,51 +2,55 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import OptimizedImage from './OptimizedImage'
 import { useEffect, useState } from 'react'
 
 interface FaceScanAnalysisPageProps {
+  capturedImage?: string | null
   onComplete: () => void
-  capturedImage?: string
 }
 
-export default function FaceScanAnalysisPage({ onComplete, capturedImage }: FaceScanAnalysisPageProps) {
+export default function FaceScanAnalysisPage({ capturedImage, onComplete }: FaceScanAnalysisPageProps) {
   const router = useRouter()
+  const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [currentStep, setCurrentStep] = useState(0)
 
-  const [step, setStep] = useState(0)
-  const analysisTexts = [
-    'Analyzing your chin...',
-    'Analyzing your nose...',
-    'Analyzing your lips...',
-    'Analyzing your forehead...',
-    'Analyzing your face shape...'
+  const analysisSteps = [
+    'Analyzing facial features...',
+    'Detecting skin tone and texture...',
+    'Identifying beauty enhancement opportunities...',
+    'Generating personalized recommendations...',
+    'Finalizing your beauty plan...'
   ]
 
-  // Step timer and completion
   useEffect(() => {
-    if (step < analysisTexts.length - 1) {
-      const timer = setTimeout(() => setStep(step + 1), 2500)
-      return () => clearTimeout(timer)
-    } else {
-      // Wait 2.5s on last step, then complete
-      const timer = setTimeout(() => onComplete(), 2500)
-      return () => clearTimeout(timer)
-    }
-  }, [step])
+    const interval = setInterval(() => {
+      setAnalysisProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          setTimeout(() => onComplete(), 1000)
+          return 100
+        }
+        return prev + 2
+      })
+    }, 100)
 
-  // Scanning line animation: loops from bottom to top every 3 seconds
-  const [scanPos, setScanPos] = useState(0)
+    return () => clearInterval(interval)
+  }, [onComplete])
+
   useEffect(() => {
-    let running = true
-    let start = Date.now()
-    function animate() {
-      if (!running) return
-      const elapsed = (Date.now() - start) % 3000 // 3s per scan
-      setScanPos(elapsed / 3000)
-      requestAnimationFrame(animate)
-    }
-    animate()
-    return () => { running = false }
-  }, [])
+    const stepInterval = setInterval(() => {
+      setCurrentStep(prev => {
+        if (prev >= analysisSteps.length - 1) {
+          clearInterval(stepInterval)
+          return analysisSteps.length - 1
+        }
+        return prev + 1
+      })
+    }, 2000)
+
+    return () => clearInterval(stepInterval)
+  }, [analysisSteps.length])
 
   const handleBack = () => {
     router.push('/')
@@ -61,77 +65,78 @@ export default function FaceScanAnalysisPage({ onComplete, capturedImage }: Face
           transition={{ duration: 0.8 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 leading-tight">
-            Analyzing your
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">
+            Analyzing your face...
           </h1>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-            facial features
-          </h2>
         </motion.div>
 
-        {/* Face Scan Image with Scanning Line */}
+        {/* Analysis Progress */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative mb-8"
+          className="mb-8"
         >
-          <div className="relative w-full max-w-md mx-auto">
-            <div className="relative">
-              <img
-                src={capturedImage || "/images/Frame_1261155189_hhrqjt.png"}
-                alt="Your face for analysis"
-                className="w-full h-auto rounded-lg"
-                loading="lazy"
-              />
-              {/* Futuristic scanning line animation */}
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: `${(1 - scanPos) * 100}%`, height: '8px' }}>
-                {/* Main neon line */}
-                <div
-                  className="w-full h-2 rounded-full animate-pulse"
-                  style={{
-                    background: 'linear-gradient(90deg, #38bdf8 0%, #06b6d4 100%)',
-                    boxShadow: '0 0 24px 8px #38bdf8, 0 0 64px 16px #06b6d4',
-                    filter: 'blur(1.5px)'
-                  }}
-                ></div>
-                {/* Trailing effect */}
-                <div
-                  className="w-full h-6 mt-1 rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, rgba(56,189,248,0.15) 0%, rgba(6,182,212,0.10) 100%)',
-                    filter: 'blur(6px)'
-                  }}
-                ></div>
-              </div>
-            </div>
+          <div className="bg-gray-200 rounded-full h-4 mb-4">
+            <motion.div
+              className="bg-blue-600 h-4 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${analysisProgress}%` }}
+              transition={{ duration: 0.5 }}
+            />
           </div>
+          <p className="text-lg text-gray-700 font-medium">
+            {analysisSteps[currentStep]}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            {analysisProgress}% complete
+          </p>
         </motion.div>
 
-        {/* Instructional Text */}
+        {/* Captured Image Display */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-center mb-8"
+          className="mb-8 flex justify-center"
         >
-          <p className="text-lg text-gray-700 leading-relaxed">
-            {analysisTexts[step]}
-          </p>
+          <OptimizedImage
+            src={capturedImage || "/images/optimized/Frame_1261155189_hhrqjt.webp"}
+            alt="Face analysis"
+            width={320}
+            height={400}
+            className="w-80 h-auto rounded-lg border-2 border-gray-300"
+            quality={85}
+            sizes="(max-width: 768px) 320px, 400px"
+          />
         </motion.div>
 
-        {/* Loading Animation */}
+        {/* Action Buttons */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex justify-center mb-8"
+          className="space-y-4 mb-8"
         >
-          <div className="flex space-x-2">
-            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce"></div>
-            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-          </div>
+          <button
+            onClick={handleBack}
+            className="w-full bg-gray-200 text-gray-800 py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-300 transition-all duration-300"
+          >
+            GO BACK
+          </button>
+        </motion.div>
+
+        {/* Privacy Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="flex items-center justify-center space-x-2 text-sm text-gray-600"
+        >
+          <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          </svg>
+          <span>Your privacy is our priority. You remain anonymous - no one will see your face when you scan it.</span>
         </motion.div>
       </main>
     </div>

@@ -44,107 +44,70 @@ export default function ContactFormPage() {
     setError('');
 
     try {
-      // Gather quiz answers from localStorage
-      const quizAnswers = localStorage.getItem('quizAnswers');
-      const quizProgress = localStorage.getItem('quizProgress');
+      // Set submitted state immediately since we're not sending to make.com anymore
+      setSubmitted(true);
       
-      // Parse quiz data
-      const parsedQuizAnswers = quizAnswers ? JSON.parse(quizAnswers) : {};
-      const parsedQuizProgress = quizProgress ? JSON.parse(quizProgress) : {};
-
-      // Prepare data to send to webhook
-      const submissionData = {
-        type: 'complete',
-        contact: {
-          name: form.name,
-          contact: form.contact,
-          email: form.email,
-          submittedAt: new Date().toISOString()
-        },
-        quiz: {
-          answers: parsedQuizAnswers,
-          progress: parsedQuizProgress,
-          completed: true
-        },
-        sessionId: localStorage.getItem('sessionId') || `session_${Date.now()}`,
-        timestamp: new Date().toISOString()
-      };
-
-      // Send to Make.com webhook
-      const response = await fetch('https://hook.us1.make.com/ofmerat6a523wkdvohdisxwgiq6b7k14', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData)
-      });
-
-      if (response.ok) {
-        setSubmitted(true);
-        // Fire Meta Lead event
-        if (typeof window !== 'undefined') {
-          if (window.fbq) {
-            window.fbq('track', 'Lead');
-          }
-          if (window.gtag) {
-            window.gtag('event', 'generate_lead', {
-              event_category: 'Lead',
-              event_label: 'Contact Form Submitted',
-              custom_parameter_1: form.email,
-              custom_parameter_3: localStorage.getItem('sessionId') || 'unknown'
-            });
-          }
+      // Fire Meta Lead event
+      if (typeof window !== 'undefined') {
+        if (window.fbq) {
+          window.fbq('track', 'Lead');
+        }
+        if (window.gtag) {
+          window.gtag('event', 'generate_lead', {
+            event_category: 'Lead',
+            event_label: 'Contact Form Submitted',
+            custom_parameter_1: form.email,
+            custom_parameter_3: localStorage.getItem('sessionId') || 'unknown'
+          });
+        }
+      }
+      
+      // Fire Meta Purchase event after successful submission
+      setTimeout(() => {
+        // Get selected plan from localStorage
+        const selectedPlanData = localStorage.getItem('selectedPlan');
+        const plan = selectedPlanData ? JSON.parse(selectedPlanData) : null;
+        
+        // Extract price value (remove ₹ symbol and convert to number)
+        const priceValue = plan?.price ? parseFloat(plan.price.replace('₹', '')) : 0.00;
+        const planName = plan?.name || 'Beauty Quiz Consultation';
+        const planId = plan?.id || 'beauty_quiz_consultation';
+        
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'Purchase', {
+            value: priceValue,
+            currency: 'INR',
+            content_name: planName,
+            content_category: 'Beauty Quiz',
+            content_type: 'product',
+            content_ids: [planId],
+            num_items: 1,
+            custom_parameter_1: form.email,
+            custom_parameter_2: 'quiz_completed',
+            custom_parameter_3: localStorage.getItem('sessionId') || 'unknown',
+            custom_parameter_4: plan?.id || 'unknown_plan'
+          });
         }
         
-        // Fire Meta Purchase event after successful submission
-        setTimeout(() => {
-          // Get selected plan from localStorage
-          const selectedPlanData = localStorage.getItem('selectedPlan');
-          const plan = selectedPlanData ? JSON.parse(selectedPlanData) : null;
-          
-          // Extract price value (remove ₹ symbol and convert to number)
-          const priceValue = plan?.price ? parseFloat(plan.price.replace('₹', '')) : 0.00;
-          const planName = plan?.name || 'Beauty Quiz Consultation';
-          const planId = plan?.id || 'beauty_quiz_consultation';
-          
-          if (typeof window !== 'undefined' && window.fbq) {
-            window.fbq('track', 'Purchase', {
-              value: priceValue,
-              currency: 'INR',
-              content_name: planName,
-              content_category: 'Beauty Quiz',
-              content_type: 'product',
-              content_ids: [planId],
-              num_items: 1,
-              custom_parameter_1: form.email,
-              custom_parameter_2: 'quiz_completed',
-              custom_parameter_3: localStorage.getItem('sessionId') || 'unknown',
-              custom_parameter_4: plan?.id || 'unknown_plan'
-            });
-          }
-          
-          // Google Analytics 4 Purchase event
-          if (typeof window !== 'undefined' && window.gtag) {
-            window.gtag('event', 'purchase', {
-              transaction_id: `quiz_${Date.now()}`,
-              value: priceValue,
-              currency: 'INR',
-              items: [{
-                item_id: planId,
-                item_name: planName,
-                item_category: 'Beauty Quiz',
-                quantity: 1,
-                price: priceValue
-              }],
-              custom_parameter_1: form.email,
-              custom_parameter_3: localStorage.getItem('sessionId') || 'unknown',
-              custom_parameter_4: plan?.id || 'unknown_plan'
-            });
-          }
-        }, 1000); // 1 second delay to ensure thank you page is shown
-      } else {
-        throw new Error('Failed to submit data');
-      }
+        // Google Analytics 4 Purchase event
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'purchase', {
+            transaction_id: `quiz_${Date.now()}`,
+            value: priceValue,
+            currency: 'INR',
+            items: [{
+              item_id: planId,
+              item_name: planName,
+              item_category: 'Beauty Quiz',
+              quantity: 1,
+              price: priceValue
+            }],
+            custom_parameter_1: form.email,
+            custom_parameter_3: localStorage.getItem('sessionId') || 'unknown',
+            custom_parameter_4: plan?.id || 'unknown_plan'
+          });
+        }
+      }, 1000); // 1 second delay to ensure thank you page is shown
     } catch (err) {
       console.error('Submission error:', err);
       setError('Failed to submit. Please try again.');

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import OptimizedImage from './OptimizedImage'
 
 interface ResultsPreviewPageProps {
   onContinue: () => void
@@ -11,91 +11,85 @@ interface ResultsPreviewPageProps {
 export default function ResultsPreviewPage({ onContinue }: ResultsPreviewPageProps) {
   const router = useRouter()
 
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 5000)
-    return () => clearTimeout(timer)
-  }, [])
-
   const handleBack = () => {
     router.push('/')
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Responsive Background Images */}
-      <div className="absolute inset-0">
-        {/* Desktop Background */}
-        <img
-          src="/images/Desktop_2_gltvhs.png"
-          alt="Results background desktop"
-          className="hidden md:block w-full h-full object-cover"
-          loading="lazy"
-        />
-        {/* Mobile Background */}
-        <img
-          src="/images/image-3_nbxiwu.png"
-          alt="Results background mobile"
-          className="block md:hidden w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
+    <div className="min-h-screen bg-white">
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">
+            Your personalized beauty analysis is ready!
+          </h1>
+        </motion.div>
 
-      {/* Loading Animation Overlay */}
-      {loading && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 transition-opacity duration-700">
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"></div>
-            <span className="text-white text-xl font-semibold drop-shadow-lg">Analyzing your results...</span>
-          </div>
-        </div>
-      )}
+        {/* Results Preview Images */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-8 grid grid-cols-2 gap-4"
+        >
+          <OptimizedImage
+            src="/images/optimized/Desktop_2_gltvhs.webp"
+            alt="Results preview 1"
+            width={160}
+            height={200}
+            className="w-full h-48 object-cover rounded-lg"
+            quality={80}
+            sizes="(max-width: 768px) 50vw, 200px"
+          />
+          <OptimizedImage
+            src="/images/optimized/image-3_nbxiwu.webp"
+            alt="Results preview 2"
+            width={160}
+            height={200}
+            className="w-full h-48 object-cover rounded-lg"
+            quality={80}
+            sizes="(max-width: 768px) 50vw, 200px"
+          />
+        </motion.div>
 
-      {/* Main Content - no card, just text and button */}
-      {!loading && (
-        <main className="relative z-10 flex flex-col items-center justify-end min-h-screen px-4 pb-24">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl md:text-4xl font-display font-bold text-white mb-6 leading-tight drop-shadow-lg text-center"
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="space-y-4 mb-8"
+        >
+          <button
+            onClick={onContinue}
+            className="w-full bg-black text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            Your Results Are In!
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-white mb-4 leading-relaxed italic drop-shadow-md text-center"
+            VIEW MY RESULTS
+          </button>
+          <button
+            onClick={handleBack}
+            className="w-full bg-gray-200 text-gray-800 py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-300 transition-all duration-300"
           >
-            Based on your answers, <span className="not-italic font-bold">we're <span className='italic'>93% sure</span></span> you can look more attractive!
-          </motion.p>
+            GO BACK
+          </button>
+        </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-base md:text-lg text-white mb-10 leading-relaxed drop-shadow text-center"
-          >
-            You're going to do great!
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="w-full max-w-md"
-          >
-            <button
-              onClick={onContinue}
-              className="w-full bg-transparent border border-white text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-white hover:text-black transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              CONTINUE
-            </button>
-          </motion.div>
-        </main>
-      )}
+        {/* Privacy Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="flex items-center justify-center space-x-2 text-sm text-gray-600"
+        >
+          <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          </svg>
+          <span>Your privacy is our priority. You remain anonymous - no one will see your face when you scan it.</span>
+        </motion.div>
+      </main>
     </div>
   )
 } 

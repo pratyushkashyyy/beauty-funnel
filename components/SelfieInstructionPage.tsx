@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import OptimizedImage from './OptimizedImage'
 
 interface SelfieInstructionPageProps {
   onTakeSelfie: (imageData: string) => void
@@ -305,11 +306,14 @@ export default function SelfieInstructionPage({ onTakeSelfie, onUploadFromGaller
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-8 flex justify-center"
         >
-          <img
-            src="/images/Frame_1261155189_hhrqjt.png"
+          <OptimizedImage
+            src="/images/optimized/Frame_1261155189_hhrqjt.webp"
             alt="Selfie instruction"
+            width={320}
+            height={400}
             className="w-80 h-auto rounded-lg border-2 border-gray-300"
-            loading="lazy"
+            quality={85}
+            sizes="(max-width: 768px) 320px, 400px"
           />
         </motion.div>
 

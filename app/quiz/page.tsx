@@ -20,6 +20,8 @@ import FaceScanAnalysisPage from '../../components/FaceScanAnalysisPage'
 import ProfileSavingPage from '../../components/ProfileSavingPage'
 import AnalysisProcessingPage from '../../components/AnalysisProcessingPage'
 import PaymentPage from '../../components/PaymentPage'
+import ContactInfoCollection from '../../components/ContactInfoCollection'
+import { getSessionId, generateFingerprint, getDeviceInfo } from '../../lib/fingerprint'
 
 declare global {
   interface Window {
@@ -53,6 +55,31 @@ export default function QuizPage() {
   const [capturedSelfie, setCapturedSelfie] = useState<string | null>(null)
   const [isAutoAdvancing, setIsAutoAdvancing] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const [showContactInfo, setShowContactInfo] = useState(false)
+  const [sessionId, setSessionId] = useState<string>('')
+  const [userContactInfo, setUserContactInfo] = useState<{ name: string; email: string; phone: string } | null>(null)
+
+  // Check if user exists in database
+  const checkUserExists = async (sessionId: string) => {
+    try {
+      const response = await fetch(`/api/user?sessionId=${sessionId}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.user) {
+          setUserContactInfo({
+            name: data.user.name,
+            email: data.user.email,
+            phone: data.user.phone
+          })
+        } else {
+          // User doesn't exist, show contact info after 2-3 questions
+          setShowContactInfo(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error checking user:', error)
+    }
+  }
 
   // Function to get current page ID based on state
   const getCurrentPageId = () => {
@@ -83,9 +110,13 @@ export default function QuizPage() {
   useEffect(() => {
     setIsClient(true)
     
-    // Initialize session ID if not exists
-    if (typeof window !== 'undefined' && !localStorage.getItem('sessionId')) {
-      localStorage.setItem('sessionId', `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    // Initialize session ID and fingerprint
+    if (typeof window !== 'undefined') {
+      const currentSessionId = getSessionId()
+      setSessionId(currentSessionId)
+      
+      // Check if user exists in database
+      checkUserExists(currentSessionId)
     }
     
     const loadSavedProgress = () => {
@@ -192,7 +223,7 @@ export default function QuizPage() {
     }))
   }
 
-  const handleOptionSelect = (optionId: string) => {
+  const handleOptionSelect = async (optionId: string) => {
     // Meta Pixel tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('trackCustom', 'QuizStep', {
@@ -209,8 +240,32 @@ export default function QuizPage() {
         event_label: currentQuestion?.id,
         custom_parameter_1: quizState.currentStep,
         custom_parameter_2: optionId,
-        custom_parameter_3: localStorage.getItem('sessionId') || 'unknown'
+        custom_parameter_3: sessionId || 'unknown'
       });
+    }
+
+    // Save quiz response to database
+    if (sessionId && currentQuestion) {
+      try {
+        const response = await fetch('/api/quiz-response', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+            questionId: currentQuestion.id,
+            questionTitle: currentQuestion.title,
+            answer: optionId
+          })
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to save quiz response:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error saving quiz response:', error);
+      }
     }
 
     if (currentQuestion?.type === 'multiple') {
@@ -239,9 +294,6 @@ export default function QuizPage() {
         }
       };
       localStorage.setItem('quizAnswers', JSON.stringify(updatedAnswers));
-
-      // Send partial progress to webhook
-      sendPartialProgress(updatedAnswers, false);
     } else {
       // Handle single choice - auto-advance after delay
       setQuizState(prev => ({
@@ -264,53 +316,12 @@ export default function QuizPage() {
       };
       localStorage.setItem('quizAnswers', JSON.stringify(updatedAnswers));
 
-      // Send partial progress to webhook
-      sendPartialProgress(updatedAnswers, false);
-
       // Auto-advance for single-select questions after 0.8 seconds
       setTimeout(() => {
         handleNext();
       }, 800);
     }
-
-    // Save quiz progress to localStorage
-    const progress = {
-      currentStep: quizState.currentStep,
-      totalSteps: quizQuestions.length,
-      completedSteps: Object.keys(JSON.parse(localStorage.getItem('quizAnswers') || '{}')).length,
-      lastUpdated: new Date().toISOString()
-    };
-    localStorage.setItem('quizProgress', JSON.stringify(progress));
-  };
-
-  // Function to send partial progress to webhook
-  const sendPartialProgress = async (answers: any, isComplete: boolean = false) => {
-    try {
-      const progressData = {
-        type: isComplete ? 'complete' : 'partial',
-        progress: {
-          currentStep: quizState.currentStep,
-          totalSteps: quizQuestions.length,
-          completedSteps: Object.keys(answers).length,
-          lastUpdated: new Date().toISOString()
-        },
-        answers: answers,
-        sessionId: localStorage.getItem('sessionId') || `session_${Date.now()}`,
-        timestamp: new Date().toISOString()
-      };
-
-      // Send to Make.com webhook
-      await fetch('https://hook.us1.make.com/ofmerat6a523wkdvohdisxwgiq6b7k14', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(progressData)
-      });
-    } catch (error) {
-      console.error('Error sending partial progress:', error);
-    }
-  };
+  }
 
   const canProceed = () => {
     if (!currentQuestion) return false
@@ -324,8 +335,13 @@ export default function QuizPage() {
     console.log('handleNext called, currentStep:', quizState.currentStep, 'totalSteps:', quizQuestions.length)
     
     if (quizState.currentStep < quizQuestions.length) {
-      // Check if we just completed the 8th question (skin concerns)
-      if (quizState.currentStep === 8) {
+      // Show contact info after 2 questions if user doesn't exist
+      if (quizState.currentStep === 2 && !userContactInfo) {
+        console.log('Showing contact info page')
+        setShowContactInfo(true)
+        updateURL(3)
+      } else if (quizState.currentStep === 8) {
+        // Check if we just completed the 8th question (skin concerns)
         console.log('Showing social proof page')
         setShowSocialProof(true)
         updateURL(8)
@@ -399,18 +415,72 @@ export default function QuizPage() {
     updateURL(20)
   }
 
-  const handleSelfieInstructionTakeSelfie = (imageData: string) => {
+  const handleSelfieInstructionTakeSelfie = async (imageData: string) => {
     setCapturedSelfie(imageData)
     setShowSelfieInstruction(false)
     setShowFaceScanAnalysis(true)
     updateURL(19)
+    
+    // Upload image to server
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageData)
+      const blob = await response.blob()
+      
+      // Create form data
+      const formData = new FormData()
+      formData.append('image', blob, 'selfie.jpg')
+      formData.append('sessionId', sessionId)
+      formData.append('imageType', 'selfie')
+      
+      // Upload to server
+      const uploadResponse = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (!uploadResponse.ok) {
+        console.error('Failed to upload image:', uploadResponse.statusText)
+      } else {
+        console.log('Image uploaded successfully')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+    }
   }
 
-  const handleSelfieInstructionUploadGallery = (imageData: string) => {
+  const handleSelfieInstructionUploadGallery = async (imageData: string) => {
     setCapturedSelfie(imageData)
     setShowSelfieInstruction(false)
     setShowFaceScanAnalysis(true)
     updateURL(19)
+    
+    // Upload image to server
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageData)
+      const blob = await response.blob()
+      
+      // Create form data
+      const formData = new FormData()
+      formData.append('image', blob, 'gallery.jpg')
+      formData.append('sessionId', sessionId)
+      formData.append('imageType', 'gallery')
+      
+      // Upload to server
+      const uploadResponse = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (!uploadResponse.ok) {
+        console.error('Failed to upload image:', uploadResponse.statusText)
+      } else {
+        console.log('Image uploaded successfully')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+    }
   }
 
   const handleFaceScanAnalysisComplete = () => {
@@ -438,6 +508,14 @@ export default function QuizPage() {
     setShowAnalysisProcessing(false)
     setShowPayment(true)
     updateURL(25)
+  }
+
+  const handleContactInfoContinue = async (contactInfo: { name: string; email: string; phone: string }) => {
+    setUserContactInfo(contactInfo)
+    setShowContactInfo(false)
+    
+    // The ContactInfoCollection component already saves the user to the database
+    // No need to save again here
   }
 
   const handlePaymentComplete = () => {
@@ -520,6 +598,31 @@ export default function QuizPage() {
   }
 
 
+
+  // Show contact info collection page
+  if (showContactInfo) {
+    return (
+      <div className="min-h-screen bg-white">
+        <QuizHeader 
+          currentStep={3} 
+          totalSteps={quizQuestions.length}
+          onBack={handlePrevious}
+          isSpecialPage={true}
+          currentPageId={3}
+        />
+        <div className="flex justify-center">
+          <div className="w-full max-w-md px-4">
+            <div className="pb-20">
+              <ContactInfoCollection 
+                onContinue={handleContactInfoContinue}
+                sessionId={sessionId}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Show special pages
   if (showSocialProof) {

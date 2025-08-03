@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import OptimizedImage from './OptimizedImage'
 
 interface FaceScanPageProps {
   onContinue: () => void
@@ -24,43 +25,30 @@ export default function FaceScanPage({ onContinue, onSkip }: FaceScanPageProps) 
           transition={{ duration: 0.8 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-            Let's customize your experience perfectly.
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">
+            Let's analyze your face to create your personalized beauty plan
           </h1>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Scanning your face provides valuable insights to reveal your most beautiful self. It's quick, and completely private - your scan stays <strong>confidential</strong> and is <strong>never viewed by others.</strong>
-          </p>
         </motion.div>
 
+        {/* Face Scan Image */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative mb-8"
+          className="mb-8 flex justify-center"
         >
-          <div className="relative w-full max-w-md mx-auto">
-            <div className="relative">
-              <img
-                src="/images/scan-photo_vyk9gf.jpg"
-                alt="Woman's face for scanning"
-                className="w-full h-auto rounded-lg"
-                loading="lazy"
-              />
-            </div>
-          </div>
+          <OptimizedImage
+            src="/images/optimized/scan-photo_vyk9gf.webp"
+            alt="Face scan illustration"
+            width={320}
+            height={400}
+            className="w-80 h-auto rounded-lg border-2 border-gray-300"
+            quality={85}
+            sizes="(max-width: 768px) 320px, 400px"
+          />
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-center mb-8"
-        >
-          <p className="text-lg text-gray-700 font-medium">
-            <strong>93,451</strong> people like you already scanned their face.
-          </p>
-        </motion.div>
-
+        {/* Action Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -71,16 +59,23 @@ export default function FaceScanPage({ onContinue, onSkip }: FaceScanPageProps) 
             onClick={onContinue}
             className="w-full bg-black text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            LET'S DO IT
+            START FACE SCAN
           </button>
           <button
             onClick={onSkip}
-            className="w-full text-gray-600 hover:text-gray-800 transition-colors font-medium"
+            className="w-full bg-gray-200 text-gray-800 py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-300 transition-all duration-300"
           >
-            DO IT LATER
+            SKIP FOR NOW
+          </button>
+          <button
+            onClick={handleBack}
+            className="w-full bg-transparent text-gray-600 py-4 px-8 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300"
+          >
+            GO BACK
           </button>
         </motion.div>
 
+        {/* Privacy Statement */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
